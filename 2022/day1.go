@@ -6,7 +6,18 @@ import (
 	"fmt"
 	"bufio"
 	"strconv"
+	"sort"
 )
+
+const topNCalorieHolders = 3
+
+func sum(a []int) int {
+	sum := 0
+	for _, v := range a {
+		sum += v
+	}
+	return sum
+}
 
 func runDay1(ctx context.Context, args []string) error { 
 	elves, err := readInput("day1.input")
@@ -14,18 +25,22 @@ func runDay1(ctx context.Context, args []string) error {
 		return fmt.Errorf("unable to read input: %w", err)
 	}
 
-	maxCalories := 0
-	for _, elf := range elves {
-		total := 0
-		for _, calories := range elf {
-			total += calories
-		}
-		if total > maxCalories {
-			maxCalories = total
-		}
+	totals := make([]int, len(elves))
+	for i, elf := range elves {
+		totals[i] = sum(elf)
 	}
 
-	fmt.Printf("Max calories: %d\n", maxCalories)
+	// fmt.Printf("%#v\n", totals)
+	
+	sort.Slice(totals, func(i, j int) bool {
+		return totals[i] > totals[j]
+	})
+
+	// fmt.Printf("%#v\n", totals)
+
+	totals = totals[:topNCalorieHolders]
+		
+	fmt.Printf("Max calories: %#v, total: %d\n", totals, sum(totals))
 
 	return nil
 }
@@ -58,6 +73,10 @@ func readInput(path string) ([][]int, error) {
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("unable to read input: %w", err)
+	}
+
+	if len(elf) > 0 {
+		elves = append(elves, elf)
 	}
 
 	return elves, nil
