@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -73,26 +72,27 @@ func readInputDay1(path string) ([][]int, error) {
 	elves := [][]int{}
 	elf := []int{}
 
-	scanner := bufio.NewScanner(input)
-	for scanner.Scan() {
-		line := scanner.Text()
+	err = readLines(input, func(line string) error {
 		if line == "" {
 			elves = append(elves, elf)
 			elf = []int{}
-			continue
+			return nil
 		}
 
 		calories, err := strconv.Atoi(line)
 		if err != nil {
-			return nil, fmt.Errorf("unable to parse calories (%q): %w", line, err)
+			return fmt.Errorf("unable to parse calories (%q): %w", line, err)
 		}
 
 		elf = append(elf, calories)
-	}
-	if err := scanner.Err(); err != nil {
+
+		return nil
+	})
+	if err != nil {
 		return nil, fmt.Errorf("unable to read input: %w", err)
 	}
 
+	// if any remaining, make sure to include
 	if len(elf) > 0 {
 		elves = append(elves, elf)
 	}

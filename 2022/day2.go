@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -132,18 +131,18 @@ func readInputDay2(path string) ([]round, error) {
 	defer input.Close()
 
 	rounds := []round{}
-
-	scanner := bufio.NewScanner(input)
-	for scanner.Scan() {
+	err = readLines(input, func(line string) error {
 		r := round{}
-		line := scanner.Text()
-
 		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.Suggestion)
 		if err != nil {
-			return nil, fmt.Errorf("unable to parse line: %w", err)
+			return fmt.Errorf("unable to parse line: %w", err)
 		}
 
 		rounds = append(rounds, r)
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to read input: %w", err)
 	}
 
 	return rounds, nil
