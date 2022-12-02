@@ -6,8 +6,8 @@ import (
 	"io"
 )
 
-func sumInts(a []int) int {
-	sum := 0
+func sum[V int](a []V) V {
+	var sum V
 	for _, v := range a {
 		sum += v
 	}

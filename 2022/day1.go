@@ -22,7 +22,7 @@ func runDay1Part2(ctx context.Context, args []string) (string, error) {
 
 	totals := make([]int, len(elves))
 	for i, elf := range elves {
-		totals[i] = sumInts(elf)
+		totals[i] = sum(elf)
 	}
 
 	// fmt.Printf("%#v\n", totals)
@@ -35,7 +35,7 @@ func runDay1Part2(ctx context.Context, args []string) (string, error) {
 
 	totals = totals[:topNCalorieHolders]
 
-	return fmt.Sprintf("%d", sumInts(totals)), nil
+	return fmt.Sprintf("%d", sum(totals)), nil
 }
 
 func runDay1Part1(ctx context.Context, args []string) (string, error) {
