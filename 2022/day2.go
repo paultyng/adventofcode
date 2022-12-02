@@ -27,26 +27,54 @@ func runDay2(ctx context.Context, args []string) error {
 }
 
 type round struct {
-	OpponentPlay  string
-	SuggestedPlay string
+	OpponentPlay   string
+	DesiredOutcome string
 }
 
 func (r *round) Score() (int, int) {
-	shapeScore := 0
-	switch r.SuggestedPlay {
-	case "X": // rock
-		shapeScore = 1
-	case "Y": // paper
-		shapeScore = 2
-	case "Z": // scissors
-		shapeScore = 3
+	outcomeScore := 0
+	suggestedPlay := ""
+	switch r.DesiredOutcome {
+	case "X": // lose
+		outcomeScore = 0
+		switch r.OpponentPlay {
+		case "A": // rock
+			suggestedPlay = "scissors"
+		case "B": // paper
+			suggestedPlay = "rock"
+		case "C": // scissors
+			suggestedPlay = "paper"
+		}
+	case "Y": // draw
+		outcomeScore = 3
+		switch r.OpponentPlay {
+		case "A": // rock
+			suggestedPlay = "rock"
+		case "B": // paper
+			suggestedPlay = "paper"
+		case "C": // scissors
+			suggestedPlay = "scissors"
+		}
+	case "Z": // win
+		outcomeScore = 6
+		switch r.OpponentPlay {
+		case "A": // rock
+			suggestedPlay = "paper"
+		case "B": // paper
+			suggestedPlay = "scissors"
+		case "C": // scissors
+			suggestedPlay = "rock"
+		}
 	}
 
-	outcomeScore := 0
-	if r.SuggestedPlay == "X" && r.OpponentPlay == "A" || r.SuggestedPlay == "Y" && r.OpponentPlay == "B" || r.SuggestedPlay == "Z" && r.OpponentPlay == "C" {
-		outcomeScore = 3
-	} else if r.SuggestedPlay == "X" && r.OpponentPlay == "C" || r.SuggestedPlay == "Y" && r.OpponentPlay == "A" || r.SuggestedPlay == "Z" && r.OpponentPlay == "B" {
-		outcomeScore = 6
+	shapeScore := 0
+	switch suggestedPlay {
+	case "rock":
+		shapeScore = 1
+	case "paper":
+		shapeScore = 2
+	case "scissors":
+		shapeScore = 3
 	}
 
 	return shapeScore, outcomeScore
@@ -66,7 +94,7 @@ func readInputDay2(path string) ([]round, error) {
 		r := round{}
 		line := scanner.Text()
 
-		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.SuggestedPlay)
+		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.DesiredOutcome)
 		if err != nil {
 			return nil, fmt.Errorf("unable to parse line: %w", err)
 		}
