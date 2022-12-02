@@ -11,10 +11,14 @@ import (
 
 const topNCalorieHolders = 3
 
-func runDay1(ctx context.Context, args []string) error {
-	elves, err := readInputDay1("day1.input")
+func runDay1Part2(ctx context.Context, args []string) (string, error) {
+	path := "day1.input"
+	if len(args) > 0 {
+		path = args[0]
+	}
+	elves, err := readInputDay1(path)
 	if err != nil {
-		return fmt.Errorf("unable to read input: %w", err)
+		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
 	totals := make([]int, len(elves))
@@ -32,9 +36,31 @@ func runDay1(ctx context.Context, args []string) error {
 
 	totals = totals[:topNCalorieHolders]
 
-	fmt.Printf("Max calories: %#v, total: %d\n", totals, sumInts(totals))
+	return fmt.Sprintf("%d", sumInts(totals)), nil
+}
 
-	return nil
+func runDay1Part1(ctx context.Context, args []string) (string, error) {
+	path := "day1.input"
+	if len(args) > 0 {
+		path = args[0]
+	}
+	elves, err := readInputDay1(path)
+	if err != nil {
+		return "", fmt.Errorf("unable to read input: %w", err)
+	}
+
+	maxCalories := 0
+	for _, elf := range elves {
+		total := 0
+		for _, calories := range elf {
+			total += calories
+		}
+		if total > maxCalories {
+			maxCalories = total
+		}
+	}
+
+	return fmt.Sprintf("%d", maxCalories), nil
 }
 
 func readInputDay1(path string) ([][]int, error) {

@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"os"
+	"fmt"
 	"log"
+	"os"
 )
 
 func main() {
@@ -15,6 +16,11 @@ func main() {
 }
 
 func run(ctx context.Context, args []string) error {
-	return runDay2(ctx, args)
-}
+	answer, err := runDay2Part2(ctx, args)
+	if err != nil {
+		return fmt.Errorf("unable to run: %w", err)
+	}
 
+	fmt.Printf("\nAnswer: %s\n", answer)
+	return nil
+}

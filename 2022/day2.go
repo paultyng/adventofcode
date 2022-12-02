@@ -7,34 +7,78 @@ import (
 	"os"
 )
 
-func runDay2(ctx context.Context, args []string) error {
-	rounds, err := readInputDay2("day2.input")
+func runDay2Part1(ctx context.Context, args []string) (string, error) {
+	path := "day2.input"
+	if len(args) > 0 {
+		path = args[0]
+	}
+	rounds, err := readInputDay2(path)
 	if err != nil {
-		return fmt.Errorf("unable to read input: %w", err)
+		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
 	total := 0
 
 	for _, r := range rounds {
-		shapeScore, outcomeScore := r.Score()
+		shapeScore, outcomeScore := r.Score1()
 		total += shapeScore + outcomeScore
-		fmt.Printf("Shape: %d, Outcome %d, Total: %d, %#v\n", shapeScore, outcomeScore, shapeScore+outcomeScore, r)
+		// fmt.Printf("Shape: %d, Outcome %d, Total: %d, %#v\n", shapeScore, outcomeScore, shapeScore+outcomeScore, r)
 	}
 
-	fmt.Printf("\nTotal: %d\n", total)
+	return fmt.Sprintf("%d", total), nil
+}
 
-	return nil
+func runDay2Part2(ctx context.Context, args []string) (string, error) {
+	path := "day2.input"
+	if len(args) > 0 {
+		path = args[0]
+	}
+	rounds, err := readInputDay2(path)
+	if err != nil {
+		return "", fmt.Errorf("unable to read input: %w", err)
+	}
+
+	total := 0
+
+	for _, r := range rounds {
+		shapeScore, outcomeScore := r.Score2()
+		total += shapeScore + outcomeScore
+		// fmt.Printf("Shape: %d, Outcome %d, Total: %d, %#v\n", shapeScore, outcomeScore, shapeScore+outcomeScore, r)
+	}
+
+	return fmt.Sprintf("%d", total), nil
 }
 
 type round struct {
-	OpponentPlay   string
-	DesiredOutcome string
+	OpponentPlay string
+	Suggestion   string
 }
 
-func (r *round) Score() (int, int) {
+func (r *round) Score1() (int, int) {
+	shapeScore := 0
+	switch r.Suggestion {
+	case "X": // rock
+		shapeScore = 1
+	case "Y": // paper
+		shapeScore = 2
+	case "Z": // scissors
+		shapeScore = 3
+	}
+
+	outcomeScore := 0
+	if r.Suggestion == "X" && r.OpponentPlay == "A" || r.Suggestion == "Y" && r.OpponentPlay == "B" || r.Suggestion == "Z" && r.OpponentPlay == "C" {
+		outcomeScore = 3
+	} else if r.Suggestion == "X" && r.OpponentPlay == "C" || r.Suggestion == "Y" && r.OpponentPlay == "A" || r.Suggestion == "Z" && r.OpponentPlay == "B" {
+		outcomeScore = 6
+	}
+
+	return shapeScore, outcomeScore
+}
+
+func (r *round) Score2() (int, int) {
 	outcomeScore := 0
 	suggestedPlay := ""
-	switch r.DesiredOutcome {
+	switch r.Suggestion {
 	case "X": // lose
 		outcomeScore = 0
 		switch r.OpponentPlay {
@@ -94,7 +138,7 @@ func readInputDay2(path string) ([]round, error) {
 		r := round{}
 		line := scanner.Text()
 
-		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.DesiredOutcome)
+		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.Suggestion)
 		if err != nil {
 			return nil, fmt.Errorf("unable to parse line: %w", err)
 		}
