@@ -15,6 +15,6 @@ func main() {
 }
 
 func run(ctx context.Context, args []string) error {
-	return runDay1(ctx, args)
+	return runDay2(ctx, args)
 }
 
