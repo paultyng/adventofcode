@@ -1,14 +1,15 @@
 package main
 
 import (
-	"reflect"
 	"testing"
+
+	"golang.org/x/exp/maps"
 )
 
 func TestReadRucksack(t *testing.T) {
 	rucksack := readRucksack("vJrwpWtwJgWrhcsFMMfFFhFp")
 
-	if !reflect.DeepEqual(rucksack.compartment1, map[string]bool{
+	if !maps.Equal(rucksack.compartment1, map[string]bool{
 		"v": true,
 		"J": true,
 		"r": true,
@@ -21,7 +22,7 @@ func TestReadRucksack(t *testing.T) {
 		t.Fatal("compartment 1 mismatch")
 	}
 
-	if !reflect.DeepEqual(rucksack.compartment2, map[string]bool{
+	if !maps.Equal(rucksack.compartment2, map[string]bool{
 		"h": true,
 		"c": true,
 		"s": true,

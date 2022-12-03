@@ -15,3 +15,21 @@ func TestSumInts(t *testing.T) {
 		t.Errorf("Expected %d, got %d", 0, actual)
 	}
 }
+
+func TestDuplicateKey(t *testing.T) {
+	if actual := duplicateKey(map[string]bool{}, map[string]bool{}); actual != nil {
+		t.Fatalf("expected nil")
+	}
+
+	if actual := duplicateKey(map[string]bool{"a": true, "b": true}, map[string]bool{"b": false}); *actual != "b" {
+		t.Fatalf("expected b")
+	}
+
+	if actual := duplicateKey(
+		map[string]bool{"a": true, "b": true, "c": true},
+		map[string]bool{"a": false, "b": true},
+		map[string]bool{"b": false},
+	); *actual != "b" {
+		t.Fatalf("expected b")
+	}
+}

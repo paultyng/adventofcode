@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+
+	"golang.org/x/exp/maps"
 )
 
 func runDay3Part1(ctx context.Context, args []string) (string, error) {
@@ -32,12 +34,37 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay3(path)
+	rucksacks, err := readInputDay3(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	group := []map[string]bool{}
+	total := 0
+	for _, r := range rucksacks {
+		allItems := map[string]bool{}
+		maps.Copy(allItems, r.compartment1)
+		maps.Copy(allItems, r.compartment2)
+		group = append(group, allItems)
+		if len(group) == 3 {
+			badge := duplicateKey(group...)
+			if badge == nil {
+				panic("no badge")
+			}
+			total += itemPriority(*badge)
+			group = []map[string]bool{}
+		}
+	}
+
+	if len(group) > 0 {
+		badge := duplicateKey(group...)
+		if badge == nil {
+			panic("no badge")
+		}
+		total += itemPriority(*badge)
+	}
+
+	return fmt.Sprintf("%d", total), nil
 }
 
 type rucksack struct {
@@ -46,13 +73,11 @@ type rucksack struct {
 }
 
 func (r *rucksack) DuplicateItem() string {
-	for i := range r.compartment1 {
-		if r.compartment2[i] {
-			return i
-		}
+	d := duplicateKey(r.compartment1, r.compartment2)
+	if d == nil {
+		return ""
 	}
-
-	return ""
+	return *d
 }
 
 func itemPriority(i string) int {
