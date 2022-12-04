@@ -46,3 +46,11 @@ func readLines(r io.Reader, handleLine func(line string) error) error {
 
 	return nil
 }
+
+func set[V comparable](v []V) map[V]struct{} {
+	m := map[V]struct{}{}
+	for _, i := range v {
+		m[i] = struct{}{}
+	}
+	return m
+}

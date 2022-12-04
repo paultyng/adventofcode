@@ -91,17 +91,9 @@ func readRucksack(line string) rucksack {
 	compartmentCount := len(line) / 2
 
 	return rucksack{
-		compartment1: characterMap(line[:compartmentCount]),
-		compartment2: characterMap(line[compartmentCount:]),
+		compartment1: set([]rune(line[:compartmentCount])),
+		compartment2: set([]rune(line[compartmentCount:])),
 	}
-}
-
-func characterMap(s string) map[rune]struct{} {
-	m := map[rune]struct{}{}
-	for _, c := range s {
-		m[c] = struct{}{}
-	}
-	return m
 }
 
 func readInputDay3(path string) ([]rucksack, error) {
