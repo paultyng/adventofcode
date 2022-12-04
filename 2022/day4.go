@@ -68,10 +68,6 @@ func (a *assignment) Overlaps(b assignment) bool {
 	return a.Start <= b.Start && b.Start <= a.End || b.Start <= a.Start && a.Start <= b.End
 }
 
-func (a *assignment) String() string {
-	return fmt.Sprintf("%d-%d", a.Start, a.End)
-}
-
 type pairing []assignment
 
 func (p pairing) Overlaps() bool {
@@ -88,10 +84,6 @@ func (p pairing) HasFullDuplication() bool {
 	}
 
 	return p[0].FullyContains(p[1]) || p[1].FullyContains(p[0])
-}
-
-func (p pairing) String() string {
-	return fmt.Sprintf("%v,%v", p[0], p[1])
 }
 
 func readInputDay4(path string) ([]pairing, error) {

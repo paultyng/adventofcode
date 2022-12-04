@@ -28,6 +28,14 @@ func TestAssignmentFullyContains(t *testing.T) {
 	}
 }
 
+func (a assignment) String() string {
+	return fmt.Sprintf("%d-%d", a.Start, a.End)
+}
+
+func (p pairing) String() string {
+	return fmt.Sprintf("%v,%v", p[0], p[1])
+}
+
 func TestAssignmentOverlaps(t *testing.T) {
 	for _, tc := range []pairing{
 		{assignment{5, 7}, assignment{7, 9}},
