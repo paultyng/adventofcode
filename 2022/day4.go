@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"os"
 )
@@ -11,12 +12,23 @@ func runDay4Part1(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay4(path)
+	pairings, err := readInputDay4(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	total := 0
+	for _, pair := range pairings {
+		if len(pair) != 2 {
+			panic("unexpected pairing size")
+		}
+
+		if pair.HasFullDuplication() {
+			total++
+		}
+	}
+
+	return fmt.Sprintf("%d", total), nil
 }
 
 func runDay4Part2(ctx context.Context, args []string) (string, error) {
@@ -24,33 +36,90 @@ func runDay4Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay4(path)
+	pairings, err := readInputDay4(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	total := 0
+	for _, pair := range pairings {
+		if len(pair) != 2 {
+			panic("unexpected pairing size")
+		}
+
+		if pair.Overlaps() {
+			total++
+		}
+	}
+
+	return fmt.Sprintf("%d", total), nil
 }
 
-func readInputDay4(path string) ([]struct{}, error) {
+type assignment struct {
+	Start int
+	End   int
+}
+
+func (a *assignment) FullyContains(b assignment) bool {
+	return a.Start <= b.Start && b.End <= a.End
+}
+
+func (a *assignment) Overlaps(b assignment) bool {
+	return a.Start <= b.Start && b.Start <= a.End || b.Start <= a.Start && a.Start <= b.End
+}
+
+func (a *assignment) String() string {
+	return fmt.Sprintf("%d-%d", a.Start, a.End)
+}
+
+type pairing []assignment
+
+func (p pairing) Overlaps() bool {
+	if len(p) != 2 {
+		panic("unexpected pairing size")
+	}
+
+	return p[0].Overlaps(p[1])
+}
+
+func (p pairing) HasFullDuplication() bool {
+	if len(p) != 2 {
+		panic("unexpected pairing size")
+	}
+
+	return p[0].FullyContains(p[1]) || p[1].FullyContains(p[0])
+}
+
+func (p pairing) String() string {
+	return fmt.Sprintf("%v,%v", p[0], p[1])
+}
+
+func readInputDay4(path string) ([]pairing, error) {
 	input, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open input: %w", err)
 	}
 	defer input.Close()
 
-	err = readLines(input, func(line string) error {
-		var localVar int
-		_, err := fmt.Sscan(line, &localVar)
-		if err != nil {
-			return fmt.Errorf("unable to parse line: %w", err)
-		}
-
-		panic("not implemented")
-	})
+	lines, err := csv.NewReader(input).ReadAll()
 	if err != nil {
 		return nil, fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	pairs := []pairing{}
+
+	for _, line := range lines {
+		pair := []assignment{}
+		for _, col := range line {
+			a := assignment{}
+			_, err := fmt.Sscanf(col, "%d-%d", &a.Start, &a.End)
+			if err != nil {
+				return nil, fmt.Errorf("unable to parse assignment (%q): %w", col, err)
+			}
+			pair = append(pair, a)
+		}
+		pairs = append(pairs, pair)
+	}
+
+	return pairs, nil
 }

@@ -18,7 +18,7 @@ func main() {
 type runPart func(context.Context, []string) (string, error)
 
 func run(ctx context.Context, args []string) error {
-	answer, err := runDay3Part2(ctx, args)
+	answer, err := runDay4Part2(ctx, args)
 	if err != nil {
 		return fmt.Errorf("unable to run: %w", err)
 	}
