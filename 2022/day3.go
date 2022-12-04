@@ -20,9 +20,12 @@ func runDay3Part1(ctx context.Context, args []string) (string, error) {
 
 	total := 0
 	for _, r := range rucksacks {
-		dupe := r.DuplicateItem()
+		dupe := duplicateKey(r.compartment1, r.compartment2)
+		if dupe == nil {
+			panic("no duplicate found")
+		}
 
-		total += itemPriority(dupe)
+		total += itemPriority(*dupe)
 	}
 
 	return fmt.Sprintf("%d", total), nil
@@ -69,14 +72,6 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 type rucksack struct {
 	compartment1 map[string]struct{}
 	compartment2 map[string]struct{}
-}
-
-func (r *rucksack) DuplicateItem() string {
-	d := duplicateKey(r.compartment1, r.compartment2)
-	if d == nil {
-		return ""
-	}
-	return *d
 }
 
 func itemPriority(i string) int {

@@ -19,21 +19,15 @@ func duplicateKey[M ~map[K]V, K comparable, V any](maps ...M) *K {
 		return nil
 	}
 
-	dupes := map[K]int{}
-
-	for _, m := range maps[1:] {
-		for key := range m {
-			if _, ok := maps[0][key]; ok {
-				dupes[key]++
+	for key := range maps[0] {
+		for _, m := range maps[1:] {
+			_, ok := m[key]
+			if !ok {
+				goto nextKey
 			}
 		}
-	}
-
-	// only returns one duplicate key in case multiple were found
-	for key, count := range dupes {
-		if count == len(maps)-1 {
-			return &key
-		}
+		return &key
+	nextKey:
 	}
 
 	return nil
