@@ -91,8 +91,8 @@ func readRucksack(line string) rucksack {
 	compartmentCount := len(line) / 2
 
 	return rucksack{
-		compartment1: set([]rune(line[:compartmentCount])),
-		compartment2: set([]rune(line[compartmentCount:])),
+		compartment1: keyset([]rune(line[:compartmentCount])),
+		compartment2: keyset([]rune(line[compartmentCount:])),
 	}
 }
 
