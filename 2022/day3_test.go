@@ -9,27 +9,29 @@ import (
 func TestReadRucksack(t *testing.T) {
 	rucksack := readRucksack("vJrwpWtwJgWrhcsFMMfFFhFp")
 
-	if !maps.Equal(rucksack.compartment1, map[string]bool{
-		"v": true,
-		"J": true,
-		"r": true,
-		"w": true,
-		"p": true,
-		"W": true,
-		"t": true,
-		"g": true,
+	var empty struct{}
+
+	if !maps.Equal(rucksack.compartment1, map[string]struct{}{
+		"v": empty,
+		"J": empty,
+		"r": empty,
+		"w": empty,
+		"p": empty,
+		"W": empty,
+		"t": empty,
+		"g": empty,
 	}) {
 		t.Fatal("compartment 1 mismatch")
 	}
 
-	if !maps.Equal(rucksack.compartment2, map[string]bool{
-		"h": true,
-		"c": true,
-		"s": true,
-		"F": true,
-		"M": true,
-		"f": true,
-		"p": true,
+	if !maps.Equal(rucksack.compartment2, map[string]struct{}{
+		"h": empty,
+		"c": empty,
+		"s": empty,
+		"F": empty,
+		"M": empty,
+		"f": empty,
+		"p": empty,
 	}) {
 		t.Fatal("compartment 1 mismatch")
 	}

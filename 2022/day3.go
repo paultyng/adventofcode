@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -39,10 +38,10 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	group := []map[string]bool{}
+	group := []map[string]struct{}{}
 	total := 0
 	for _, r := range rucksacks {
-		allItems := map[string]bool{}
+		allItems := map[string]struct{}{}
 		maps.Copy(allItems, r.compartment1)
 		maps.Copy(allItems, r.compartment2)
 		group = append(group, allItems)
@@ -52,7 +51,7 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 				panic("no badge")
 			}
 			total += itemPriority(*badge)
-			group = []map[string]bool{}
+			group = []map[string]struct{}{}
 		}
 	}
 
@@ -68,8 +67,8 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 }
 
 type rucksack struct {
-	compartment1 map[string]bool
-	compartment2 map[string]bool
+	compartment1 map[string]struct{}
+	compartment2 map[string]struct{}
 }
 
 func (r *rucksack) DuplicateItem() string {
@@ -102,10 +101,10 @@ func readRucksack(line string) rucksack {
 	}
 }
 
-func characterMap(s string) map[string]bool {
-	m := map[string]bool{}
+func characterMap(s string) map[string]struct{} {
+	m := map[string]struct{}{}
 	for _, c := range s {
-		m[string(c)] = true
+		m[string(c)] = struct{}{}
 	}
 	return m
 }
@@ -118,10 +117,12 @@ func readInputDay3(path string) ([]rucksack, error) {
 	defer input.Close()
 
 	rucksacks := []rucksack{}
-
-	scanner := bufio.NewScanner(input)
-	for scanner.Scan() {
-		rucksacks = append(rucksacks, readRucksack(scanner.Text()))
+	err = readLines(input, func(line string) error {
+		rucksacks = append(rucksacks, readRucksack(line))
+		return nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("unable to read input: %w", err)
 	}
 
 	return rucksacks, nil
