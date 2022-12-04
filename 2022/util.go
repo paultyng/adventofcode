@@ -19,15 +19,15 @@ func duplicateKey[M ~map[K]V, K comparable, V any](maps ...M) *K {
 		return nil
 	}
 
+KeyLoop:
 	for key := range maps[0] {
 		for _, m := range maps[1:] {
 			_, ok := m[key]
 			if !ok {
-				goto nextKey
+				continue KeyLoop
 			}
 		}
 		return &key
-	nextKey:
 	}
 
 	return nil
