@@ -76,9 +76,7 @@ func readShip(scanner *bufio.Scanner) (ship, error) {
 
 		// this is possibly the number line, confirm it matches our expectations
 		// unsure how to handle greater than 1 digit? but doesn't matter
-		if stacks != nil && strings.HasSuffix(strings.TrimRight(line, " "), fmt.Sprintf(" %d", len(stacks))) {
-			// read a final empty line if one exists
-			scanner.Scan()
+		if stacks != nil && strings.HasSuffix(" "+strings.TrimRight(line, " "), fmt.Sprintf(" %d", len(stacks))) {
 			break
 		}
 
@@ -138,6 +136,9 @@ func readInputDay5(path string) (ship, []move, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to read stacks: %w", err)
 	}
+
+	// read a blank line between sections
+	scanner.Scan()
 
 	moves, err := readMoves(scanner)
 	if err != nil {
