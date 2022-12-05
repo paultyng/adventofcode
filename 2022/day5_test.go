@@ -40,7 +40,7 @@ func TestReadStacks(t *testing.T) {
 	)
 	scanner := bufio.NewScanner(sr)
 
-	actual, err := readStacks(scanner)
+	actual, err := readShip(scanner)
 	if err != nil {
 		t.Fatalf("unable to read stacks: %v", err)
 	}

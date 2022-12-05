@@ -13,28 +13,19 @@ func runDay5Part1(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	stacks, moves, err := readInputDay5(path)
+	ship, moves, err := readInputDay5(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	// fmt.Printf("%v\n\n", stacks)
-
 	for _, m := range moves {
-		moving, remaining := popN(stacks[m.From-1], m.Count)
-		stacks[m.From-1] = remaining
+		moving, remaining := popN(ship[m.From-1], m.Count)
+		ship[m.From-1] = remaining
 		reverse(moving)
-		stacks[m.To-1] = push(stacks[m.To-1], moving...)
-
-		// fmt.Printf("%v\n%v\n\n", m, stacks)
+		ship[m.To-1] = push(ship[m.To-1], moving...)
 	}
 
-	tops := ""
-	for _, s := range stacks {
-		tops += string(s[len(s)-1])
-	}
-
-	return tops, nil
+	return ship.TopCrates(), nil
 }
 
 func runDay5Part2(ctx context.Context, args []string) (string, error) {
@@ -42,12 +33,20 @@ func runDay5Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, _, err := readInputDay5(path)
+	ship, moves, err := readInputDay5(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	for _, m := range moves {
+		moving, remaining := popN(ship[m.From-1], m.Count)
+		ship[m.From-1] = remaining
+		// CrateMover 9001 does not reverse the crates
+		// reverse(moving)
+		ship[m.To-1] = push(ship[m.To-1], moving...)
+	}
+
+	return ship.TopCrates(), nil
 }
 
 type ship []stack
@@ -58,21 +57,32 @@ type move struct {
 	To    int
 }
 
-func readStacks(scanner *bufio.Scanner) (ship, error) {
+func (s *ship) TopCrates() string {
+	tops := ""
+	for _, st := range *s {
+		tops += string(st[len(st)-1])
+	}
+	return tops
+}
+
+func readShip(scanner *bufio.Scanner) (ship, error) {
 	var stacks ship
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) == 0 {
 			return stacks, nil
 		}
+
 		// this is possibly the number line, confirm it matches our expectations
-		if strings.HasSuffix(line, fmt.Sprintf(" %d ", len(stacks))) {
+		// unsure how to handle greater than 1 digit? but doesn't matter
+		if stacks != nil && strings.HasSuffix(line, fmt.Sprintf(" %d ", len(stacks))) {
 			// read a final empty line if one exists
 			scanner.Scan()
 			break
 		}
 
 		countStacks := (len(line) + 1) / 4
+
 		if stacks == nil {
 			stacks = make([]stack, countStacks)
 		} else if len(stacks) != countStacks {
@@ -80,13 +90,12 @@ func readStacks(scanner *bufio.Scanner) (ship, error) {
 		}
 
 		for i := 0; i < countStacks; i++ {
-			crate := line[i*4 : i*4+3]
-			crate = strings.Trim(crate, " []")
-			if crate == "" {
+			crate := rune(line[i*4+1])
+			if crate == ' ' {
 				continue
 			}
 
-			stacks[i] = append([]rune{rune(crate[0])}, stacks[i]...)
+			stacks[i] = append([]rune{crate}, stacks[i]...)
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -124,7 +133,7 @@ func readInputDay5(path string) (ship, []move, error) {
 
 	scanner := bufio.NewScanner(input)
 
-	stacks, err := readStacks(scanner)
+	stacks, err := readShip(scanner)
 	if err != nil {
 		return nil, nil, fmt.Errorf("unable to read stacks: %w", err)
 	}
