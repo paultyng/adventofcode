@@ -54,3 +54,21 @@ func keyset[V comparable](v []V) map[V]struct{} {
 	}
 	return m
 }
+
+func push[T any](s []T, v ...T) []T {
+	return append(s, v...)
+}
+
+func pop[T any](s []T) (T, []T) {
+	return s[len(s)-1], s[:len(s)-1]
+}
+
+func popN[T any](s []T, n int) ([]T, []T) {
+	return s[len(s)-n:], s[:len(s)-n]
+}
+
+func reverse[T any](s []T) {
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+}
