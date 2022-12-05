@@ -55,6 +55,7 @@ func keyset[V comparable](v []V) map[V]struct{} {
 	return m
 }
 
+// push isn't really needed as its the same as append, but included for consistent naming with pop.
 func push[T any](s []T, v ...T) []T {
 	return append(s, v...)
 }
@@ -64,9 +65,13 @@ func pop[T any](s []T) (T, []T) {
 }
 
 func popN[T any](s []T, n int) ([]T, []T) {
-	return s[len(s)-n:], s[:len(s)-n]
+	popped := s[len(s)-n:]
+	// reverse for FILO
+	reverse(popped)
+	return popped, s[:len(s)-n]
 }
 
+// reverse reverses the order of the elements in the slice in place.
 func reverse[T any](s []T) {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]

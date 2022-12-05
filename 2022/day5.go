@@ -21,11 +21,11 @@ func runDay5Part1(ctx context.Context, args []string) (string, error) {
 	for _, m := range moves {
 		moving, remaining := popN(ship[m.From-1], m.Count)
 		ship[m.From-1] = remaining
-		reverse(moving)
+		// CrateMover 9000 does not reverse the order when moving
 		ship[m.To-1] = push(ship[m.To-1], moving...)
 	}
 
-	return ship.TopCrates(), nil
+	return string(ship.TopCrates()), nil
 }
 
 func runDay5Part2(ctx context.Context, args []string) (string, error) {
@@ -41,26 +41,27 @@ func runDay5Part2(ctx context.Context, args []string) (string, error) {
 	for _, m := range moves {
 		moving, remaining := popN(ship[m.From-1], m.Count)
 		ship[m.From-1] = remaining
-		// CrateMover 9001 does not reverse the crates
-		// reverse(moving)
+		// CrateMover 9001 reverses the order
+		reverse(moving)
 		ship[m.To-1] = push(ship[m.To-1], moving...)
 	}
 
-	return ship.TopCrates(), nil
+	return string(ship.TopCrates()), nil
 }
 
 type ship []stack
-type stack []rune
+type crate rune
+type stack []crate
 type move struct {
 	Count int
 	From  int
 	To    int
 }
 
-func (s *ship) TopCrates() string {
-	tops := ""
+func (s *ship) TopCrates() []crate {
+	tops := []crate{}
 	for _, st := range *s {
-		tops += string(st[len(st)-1])
+		tops = append(tops, st[len(st)-1])
 	}
 	return tops
 }
@@ -75,7 +76,7 @@ func readShip(scanner *bufio.Scanner) (ship, error) {
 
 		// this is possibly the number line, confirm it matches our expectations
 		// unsure how to handle greater than 1 digit? but doesn't matter
-		if stacks != nil && strings.HasSuffix(line, fmt.Sprintf(" %d ", len(stacks))) {
+		if stacks != nil && strings.HasSuffix(strings.TrimRight(line, " "), fmt.Sprintf(" %d", len(stacks))) {
 			// read a final empty line if one exists
 			scanner.Scan()
 			break
@@ -90,12 +91,12 @@ func readShip(scanner *bufio.Scanner) (ship, error) {
 		}
 
 		for i := 0; i < countStacks; i++ {
-			crate := rune(line[i*4+1])
-			if crate == ' ' {
+			c := crate(line[i*4+1])
+			if c == ' ' {
 				continue
 			}
 
-			stacks[i] = append([]rune{crate}, stacks[i]...)
+			stacks[i] = append([]crate{c}, stacks[i]...)
 		}
 	}
 	if err := scanner.Err(); err != nil {
