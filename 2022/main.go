@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+//go:generate go run ./gen/
+
 func main() {
 	ctx := context.Background()
 	err := run(ctx, os.Args[1:])

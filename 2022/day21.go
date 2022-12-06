@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-func runDay{{.Day}}Part1(ctx context.Context, args []string) (string, error) {
-	path := "day{{.Day}}.input"
+func runDay21Part1(ctx context.Context, args []string) (string, error) {
+	path := "day21.input"
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay{{.Day}}(path)
+	_, err := readInputDay21(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
@@ -19,12 +19,12 @@ func runDay{{.Day}}Part1(ctx context.Context, args []string) (string, error) {
 	panic("not implemented")
 }
 
-func runDay{{.Day}}Part2(ctx context.Context, args []string) (string, error) {
-	path := "day{{.Day}}.input"
+func runDay21Part2(ctx context.Context, args []string) (string, error) {
+	path := "day21.input"
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay{{.Day}}(path)
+	_, err := readInputDay21(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
@@ -32,7 +32,7 @@ func runDay{{.Day}}Part2(ctx context.Context, args []string) (string, error) {
 	panic("not implemented")
 }
 
-func readInputDay{{.Day}}(path string) ([]rucksack, error) {
+func readInputDay21(path string) ([]rucksack, error) {
 	input, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open input: %w", err)
