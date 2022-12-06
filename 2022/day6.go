@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-func runDayZPart1(ctx context.Context, args []string) (string, error) {
-	path := "dayZ.input"
+func runDay6Part1(ctx context.Context, args []string) (string, error) {
+	path := "day6.input"
 	if len(args) > 0 {
 		path = args[0]
 	}
-	things, err := readInputDayZ(path)
+	_, err := readInputDay6(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
@@ -19,12 +19,12 @@ func runDayZPart1(ctx context.Context, args []string) (string, error) {
 	panic("not implemented")
 }
 
-func runDayZPart2(ctx context.Context, args []string) (string, error) {
-	path := "dayZ.input"
+func runDay6Part2(ctx context.Context, args []string) (string, error) {
+	path := "day6.input"
 	if len(args) > 0 {
 		path = args[0]
 	}
-	things, err := readInputDayZ(path)
+	_, err := readInputDay6(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
@@ -32,7 +32,7 @@ func runDayZPart2(ctx context.Context, args []string) (string, error) {
 	panic("not implemented")
 }
 
-func readInputDayZ(path string) ([]rucksack, error) {
+func readInputDay6(path string) ([]rucksack, error) {
 	input, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open input: %w", err)

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -18,7 +20,17 @@ func main() {
 type runPart func(context.Context, []string) (string, error)
 
 func run(ctx context.Context, args []string) error {
-	answer, err := runDay5Part1(ctx, args)
+	currentDay := int(25 - time.Until(time.Date(2022, time.December, 25, 0, 0, 0, 0, time.Local)).Hours()/24)
+	if len(args) >= 1 {
+		currentDay, _ = strconv.Atoi(args[0])
+	}
+	part := "2"
+	if len(args) >= 2 {
+		part = args[1]
+	}
+
+	rp := runPartFactory(currentDay, part)
+	answer, err := rp(ctx, args)
 	if err != nil {
 		return fmt.Errorf("unable to run: %w", err)
 	}
