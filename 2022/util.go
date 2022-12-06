@@ -47,12 +47,18 @@ func readLines(r io.Reader, handleLine func(line string) error) error {
 	return nil
 }
 
-func keyset[V comparable](v []V) map[V]struct{} {
-	m := map[V]struct{}{}
-	for _, i := range v {
-		m[i] = struct{}{}
-	}
+type set[V comparable] map[V]struct{}
+
+func newSet[V comparable](values ...V) set[V] {
+	m := set[V]{}
+	m.add(values...)
 	return m
+}
+
+func (s set[V]) add(values ...V) {
+	for _, v := range values {
+		s[v] = struct{}{}
+	}
 }
 
 // push isn't really needed as its the same as append, but included for consistent naming with pop.

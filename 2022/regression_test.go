@@ -39,7 +39,11 @@ func TestPastAnswers(t *testing.T) {
 		{runDay5Part2, []string{"day5.input.test"}, "MCD"},
 		{runDay5Part2, []string{"day5.input"}, "BQDNWJPVJ"},
 
-		{runDay6Part1, []string{"day6.input.test"}, "CMZ"},
+		// {runDay6Part1, []string{"day6.input.test1"}, "7"},
+		// {runDay6Part1, []string{"day6.input.test2"}, "5"},
+		// {runDay6Part1, []string{"day6.input.test3"}, "6"},
+		// {runDay6Part1, []string{"day6.input.test4"}, "10"},
+		// {runDay6Part1, []string{"day6.input.test5"}, "11"},
 		// {runDay6Part1, []string{"day6.input"}, "QPJPLMNNR"},
 		// {runDay6Part2, []string{"day6.input.test"}, "MCD"},
 		// {runDay6Part2, []string{"day6.input"}, "BQDNWJPVJ"},

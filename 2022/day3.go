@@ -41,10 +41,10 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	group := []map[rune]struct{}{}
+	group := []set[rune]{}
 	total := 0
 	for _, r := range rucksacks {
-		allItems := map[rune]struct{}{}
+		allItems := set[rune]{}
 		maps.Copy(allItems, r.compartment1)
 		maps.Copy(allItems, r.compartment2)
 		group = append(group, allItems)
@@ -54,7 +54,7 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 				panic("no badge")
 			}
 			total += itemPriority(*badge)
-			group = []map[rune]struct{}{}
+			group = []set[rune]{}
 		}
 	}
 
@@ -70,8 +70,8 @@ func runDay3Part2(ctx context.Context, args []string) (string, error) {
 }
 
 type rucksack struct {
-	compartment1 map[rune]struct{}
-	compartment2 map[rune]struct{}
+	compartment1 set[rune]
+	compartment2 set[rune]
 }
 
 func itemPriority(i rune) int {
@@ -91,8 +91,8 @@ func readRucksack(line string) rucksack {
 	compartmentCount := len(line) / 2
 
 	return rucksack{
-		compartment1: keyset([]rune(line[:compartmentCount])),
-		compartment2: keyset([]rune(line[compartmentCount:])),
+		compartment1: newSet([]rune(line[:compartmentCount])...),
+		compartment2: newSet([]rune(line[compartmentCount:])...),
 	}
 }
 
