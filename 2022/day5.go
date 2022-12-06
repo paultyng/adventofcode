@@ -139,6 +139,9 @@ func readInputDay5(path string) (ship, []move, error) {
 
 	// read a blank line between sections
 	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		return nil, nil, fmt.Errorf("unable to scan: %w", err)
+	}
 
 	moves, err := readMoves(scanner)
 	if err != nil {
