@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 func runDay7Part1(ctx context.Context, args []string) (string, error) {
@@ -18,9 +20,9 @@ func runDay7Part1(ctx context.Context, args []string) (string, error) {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	dirTotals := map[string]int{}
+	dirTotals := []int{}
 	rootDir.Walk(func(path []string, dir directory) {
-		dirTotals[strings.Join(path, "/")] = dir.TotalSize()
+		dirTotals = append(dirTotals, dir.TotalSize())
 	})
 
 	candidateTotal := 0
@@ -39,12 +41,34 @@ func runDay7Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay7(path)
+	rootDir, err := readInputDay7(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	const (
+		totalSize  = 70000000
+		updateSize = 30000000
+	)
+
+	needSize := updateSize - (totalSize - rootDir.TotalSize())
+
+	dirTotals := []int{}
+	rootDir.Walk(func(path []string, dir directory) {
+		dirTotals = append(dirTotals, dir.TotalSize())
+	})
+
+	slices.Sort(dirTotals)
+
+	for _, dir := range dirTotals {
+		if dir < needSize {
+			continue
+		}
+
+		return fmt.Sprintf("%d", dir), nil
+	}
+
+	panic("dir to delete not found")
 }
 
 type directory struct {
@@ -62,6 +86,7 @@ func newDirectory(name string) *directory {
 }
 
 func (d *directory) TotalSize() int {
+	// TODO: memoize this for speed?
 	total := 0
 	for _, size := range d.Files {
 		total += size
