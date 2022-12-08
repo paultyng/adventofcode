@@ -83,3 +83,25 @@ func reverse[T any](s []T) {
 		s[i], s[j] = s[j], s[i]
 	}
 }
+
+func filter[T any](s []T, test func(T) bool) (ret []T) {
+	for _, v := range s {
+		if test(v) {
+			ret = append(ret, v)
+		}
+	}
+	return
+}
+
+func all[T any](s []T, test func(T) bool) bool {
+	return len(s) == len(filter(s, test))
+}
+
+// func any[T any](s []T, test func(T) bool) bool {
+// 	for _, v := range s {
+// 		if test(v) {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
