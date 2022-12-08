@@ -25,15 +25,67 @@ func runDay8Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay8(path)
+	f, err := readInputDay8(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	return fmt.Sprintf("%d", f.MaxScenicScore()), nil
 }
 
 type forest [][]int
+
+func (f forest) MaxScenicScore() int {
+	max := 0
+	for x := 0; x < len(f); x++ {
+		for y := 0; y < len(f[0]); y++ {
+			if score := f.scenicScore(x, y); score > max {
+				max = score
+			}
+		}
+	}
+	return max
+}
+
+func (f forest) scenicScore(treeX, treeY int) int {
+	treeHeight := f[treeX][treeY]
+
+	up := 0
+	for x := treeX - 1; x >= 0; x-- {
+		up++
+		if f[x][treeY] >= treeHeight {
+			break
+		}
+	}
+
+	down := 0
+	for x := treeX + 1; x < len(f); x++ {
+		down++
+		if f[x][treeY] >= treeHeight {
+			break
+		}
+	}
+
+	left := 0
+	for y := treeY - 1; y >= 0; y-- {
+		left++
+		if f[treeX][y] >= treeHeight {
+			break
+		}
+	}
+
+	right := 0
+	for y := treeY + 1; y < len(f[treeX]); y++ {
+		right++
+		if f[treeX][y] >= treeHeight {
+			break
+		}
+	}
+
+	// fmt.Printf("up: %d, down: %d, left: %d, right: %d\n", up, down, left, right)
+
+	return up * down * left * right
+}
 
 func (f forest) VisibleTrees() int {
 	visible := 0

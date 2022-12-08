@@ -5,6 +5,24 @@ import (
 	"testing"
 )
 
+func TestForestScenicScore(t *testing.T) {
+	f := forest{
+		{3, 0, 3, 7, 3},
+		{2, 5, 5, 1, 2},
+		{6, 5, 3, 3, 2},
+		{3, 3, 5, 4, 9},
+		{3, 5, 3, 9, 0},
+	}
+
+	if actual := f.scenicScore(1, 2); actual != 4 {
+		t.Errorf("expected 4, got %d", actual)
+	}
+
+	if actual := f.scenicScore(3, 2); actual != 8 {
+		t.Errorf("expected 8, got %d", actual)
+	}
+}
+
 func TestForestVisibleTrees(t *testing.T) {
 	for i, f := range []struct {
 		expected int
