@@ -105,3 +105,10 @@ func all[T any](s []T, test func(T) bool) bool {
 // 	}
 // 	return false
 // }
+
+func abs[T int](v T) T {
+	if v < 0 {
+		return -v
+	}
+	return v
+}
