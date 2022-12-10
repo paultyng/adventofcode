@@ -32,12 +32,56 @@ func runDay10Part2(ctx context.Context, args []string) (string, error) {
 	if len(args) > 0 {
 		path = args[0]
 	}
-	_, err := readInputDay10(path)
+	cycles, err := readInputDay10(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	s := &screen{
+		W:           40,
+		H:           6,
+		SpriteWidth: 3,
+	}
+
+	output := s.renderCycles(cycles)
+
+	return output, nil
+}
+
+type screen struct {
+	W, H        int
+	SpriteWidth int
+}
+
+func (s *screen) renderCycles(cycles []int) string {
+	out := []byte(strings.Repeat("X", s.W*s.H))
+	for i, c := range cycles {
+		if i >= len(out) {
+			// i = i % len(out)
+			// panic("too many cycles")
+			break
+		}
+		col := i % s.W
+		row := int((i - col) / s.W)
+
+		pix := (row * s.W) + c
+
+		// fmt.Printf("Cycle %d, row: %d, col: %d, signal: %d\n", i+1, row, col, c)
+
+		dw := int((s.SpriteWidth - 1) / 2)
+		if pix-dw <= i && i <= pix+dw {
+			out[i] = '#'
+		} else {
+			out[i] = '.'
+		}
+	}
+
+	// add newlines
+	for i := s.H; i > 0; i-- {
+		out = append(out[:(i*s.W)], append([]byte{'\n'}, out[(i*s.W):]...)...)
+	}
+
+	return string(out)
 }
 
 func readInputDay10(path string) ([]int, error) {

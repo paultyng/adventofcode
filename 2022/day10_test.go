@@ -35,3 +35,31 @@ func TestProcessCycles(t *testing.T) {
 		t.Fatalf("expected does not match actual cycles:\nexp: %v\nact: %v", expected, actual)
 	}
 }
+
+func TestScreenRenderCycles(t *testing.T) {
+	s := &screen{
+		W:           21,
+		H:           1,
+		SpriteWidth: 3,
+	}
+
+	f, err := os.Open("day10.input.test")
+	if err != nil {
+		t.Fatalf("unable to open input: %v", err)
+	}
+	defer f.Close()
+
+	cycles, err := processCycles(f)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	cycles = cycles[:21]
+
+	actual := s.renderCycles(cycles)
+	expected := "##..##..##..##..##..#\n"
+
+	if actual != expected {
+		t.Fatalf("expected does not match actual:\nexp: %v\nact: %v", expected, actual)
+	}
+}
