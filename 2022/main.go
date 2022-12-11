@@ -31,8 +31,10 @@ func run(ctx context.Context, args []string) error {
 		part = args[1]
 	}
 
+	log.Printf("Runnning day %d part %s", currentDay, part)
+
 	rp := runPartFactory(currentDay, part)
-	answer, err := rp(ctx, args)
+	answer, err := rp(ctx, args[2:])
 	if err != nil {
 		return fmt.Errorf("unable to run: %w", err)
 	}

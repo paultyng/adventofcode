@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+
+	"golang.org/x/exp/maps"
 )
 
 func sum[V int](a []V) V {
@@ -43,7 +45,9 @@ func readLines(r io.Reader, handleLine func(line string) error) error {
 			return fmt.Errorf("unable to handle line %q: %w", line, err)
 		}
 	}
-
+	if err := scanner.Err(); err != nil {
+		return fmt.Errorf("scanner error: %w", err)
+	}
 	return nil
 }
 
@@ -51,14 +55,43 @@ type set[V comparable] map[V]struct{}
 
 func newSet[V comparable](values ...V) set[V] {
 	m := set[V]{}
-	m.add(values...)
+	m.Add(values...)
 	return m
 }
 
-func (s set[V]) add(values ...V) {
+func (s set[V]) Keys() []V {
+	return maps.Keys(s)
+}
+
+func (s set[V]) Add(values ...V) {
 	for _, v := range values {
 		s[v] = struct{}{}
 	}
+}
+
+func (s set[V]) Union(others ...set[V]) set[V] {
+	ret := set[V]{}
+	for _, s := range append(others, s) {
+		ret.Add(s.Keys()...)
+	}
+	return ret
+}
+
+func (s set[V]) Intersect(others ...set[V]) set[V] {
+	ret := set[V]{}
+	for _, v := range s.Keys() {
+		contains := true
+		for _, o := range others {
+			_, contains = o[v]
+			if !contains {
+				break
+			}
+		}
+		if contains {
+			ret.Add(v)
+		}
+	}
+	return ret
 }
 
 // push isn't really needed as its the same as append, but included for consistent naming with pop.

@@ -56,31 +56,47 @@ func generateRunner(ctx context.Context, path string) error {
 }
 
 func generateMissingDayFiles(ctx context.Context) error {
-	tmpl, err := template.ParseFiles("./day.go.template")
+	goTmpl, err := template.ParseFiles("./day.go.template")
+	if err != nil {
+		return fmt.Errorf("unable to parse template: %w", err)
+	}
+	goTestTmpl, err := template.ParseFiles("./day_test.go.template")
 	if err != nil {
 		return fmt.Errorf("unable to parse template: %w", err)
 	}
 
 	for day := 1; day <= 25; day++ {
-		path := fmt.Sprintf("./day%d.go", day)
-		if _, err := os.Stat(path); err == nil {
-			continue
-		}
+		for path, tmpl := range map[string]*template.Template{
+			fmt.Sprintf("./day%d.go", day):         goTmpl,
+			fmt.Sprintf("./day%d_test.go", day):    goTestTmpl,
+			fmt.Sprintf("./day%d.input.test", day): nil,
+			fmt.Sprintf("./day%d.input", day):      nil,
+		} {
+			if _, err := os.Stat(path); err == nil {
+				continue
+			}
 
-		f, err := os.Create(path)
-		if err != nil {
-			return fmt.Errorf("unable to create file %q: %w", path, err)
-		}
-		// TODO: do this in the loop?
-		defer f.Close()
+			f, err := os.Create(path)
+			if err != nil {
+				return fmt.Errorf("unable to create file %q: %w", path, err)
+			}
+			// TODO: do this in the loop?
+			defer f.Close()
 
-		err = tmpl.Execute(f, struct {
-			Day int
-		}{
-			Day: day,
-		})
-		if err != nil {
-			return fmt.Errorf("unable to execute template (%d): %w", day, err)
+			if tmpl == nil {
+				f.Close()
+				continue
+			}
+			err = tmpl.Execute(f, struct {
+				Day int
+			}{
+				Day: day,
+			})
+			if err != nil {
+				return fmt.Errorf("unable to execute template (%d): %w", day, err)
+			}
+
+			f.Close()
 		}
 	}
 
