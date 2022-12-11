@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 func runDay11Part1(ctx context.Context, args []string) (string, error) {
@@ -19,28 +21,56 @@ func runDay11Part1(ctx context.Context, args []string) (string, error) {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	for round := 1; round <= 20; round++ {
-	}
+	// fmt.Printf("Monkies: %v\n", monkies)
 
-	for monkeyIndex, m := range monkies {
-		fmt.Printf("Monkey %d:\n", monkeyIndex)
-		for _, worry := range m.StartingItems {
-			fmt.Printf("  Monkey inspects an item with a worry level of %d.\n", worry)
-			worry = m.Operation.Apply(worry)
-			fmt.Printf("    Worry level after operation is now %d.\n", worry)
-			worry = int(worry / 3)
-			fmt.Printf("    Monkey gets bored with item. Worry level is divided by 3 to %d.\n", worry)
-			if worry%m.Test.DivisibleBy == 0 {
-				panic("not implemented")
-			} else {
-				fmt.Printf("    Current worry level is not divisible by %d.\n", m.Test.DivisibleBy)
-				fmt.Printf("    Item with worry level %d is thrown to monkey %d.\n", worry, m.Test.FalseMonkey)
-				monkies[m.Test.FalseMonkey].StartingItems = append(monkies[m.Test.FalseMonkey].StartingItems, worry)
+	inspections := make([]int, len(monkies))
+
+	for round := 1; round <= 20; round++ {
+		// items := [][]int{}
+		// for i := range monkies {
+		// 	items = append(items, monkies[i].StartingItems)
+		// 	monkies[i].StartingItems = []int{}
+		// }
+
+		for monkeyIndex, m := range monkies {
+			originalItems := m.StartingItems
+			monkies[monkeyIndex].StartingItems = []int{}
+
+			// fmt.Printf("Monkey %d:\n", monkeyIndex)
+
+			for _, worry := range originalItems {
+				inspections[monkeyIndex]++
+				// fmt.Printf("  Monkey inspects an item with a worry level of %d.\n", worry)
+
+				worry = m.Operation.Apply(worry)
+				// fmt.Printf("    Worry level after operation is now %d.\n", worry)
+
+				worry = int(worry / 3)
+				// fmt.Printf("    Monkey gets bored with item. Worry level is divided by 3 to %d.\n", worry)
+
+				if worry%m.Test.DivisibleBy == 0 {
+					// fmt.Printf("    Current worry level is divisible by %d.\n", m.Test.DivisibleBy)
+					// fmt.Printf("    Item with worry level %d is thrown to monkey %d.\n", worry, m.Test.TrueMonkey)
+					monkies[m.Test.TrueMonkey].StartingItems = append(monkies[m.Test.TrueMonkey].StartingItems, worry)
+				} else {
+					// fmt.Printf("    Current worry level is not divisible by %d.\n", m.Test.DivisibleBy)
+					// fmt.Printf("    Item with worry level %d is thrown to monkey %d.\n", worry, m.Test.FalseMonkey)
+					monkies[m.Test.FalseMonkey].StartingItems = append(monkies[m.Test.FalseMonkey].StartingItems, worry)
+				}
 			}
+		}
+
+		fmt.Println()
+
+		fmt.Printf("\nRound %d\n", round)
+		for i, m := range monkies {
+			fmt.Printf("  Monkey %d: %v\n", i, m.StartingItems)
 		}
 	}
 
-	panic("not implemented")
+	slices.Sort(inspections)
+
+	return fmt.Sprintf("%d", inspections[len(inspections)-1]*inspections[len(inspections)-2]), nil
 }
 
 func runDay11Part2(ctx context.Context, args []string) (string, error) {
