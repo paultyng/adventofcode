@@ -43,11 +43,7 @@ type motion struct {
 	Steps int
 }
 
-type point struct {
-	X, Y int
-}
-
-func (a point) Touches(b point) bool {
+func (a point) TouchesDay9(b point) bool {
 	if !(a.X-1 <= b.X && b.X <= a.X+1) {
 		return false
 	}
@@ -59,8 +55,8 @@ func (a point) Touches(b point) bool {
 	return true
 }
 
-func (a *point) MoveTowards(b point) {
-	if a.Touches(b) {
+func (a *point) MoveTowardsDay9(b point) {
+	if a.TouchesDay9(b) {
 		panic("cannot move towards a point that touches the current point")
 	}
 
@@ -144,8 +140,8 @@ func (r *rope) moveMotion(m motion) [][]point {
 		for i := 1; i < len(r.Knots); i++ {
 			k := &r.Knots[i]
 
-			if !k.Touches(*lastKnot) {
-				k.MoveTowards(*lastKnot)
+			if !k.TouchesDay9(*lastKnot) {
+				k.MoveTowardsDay9(*lastKnot)
 			}
 
 			knotPoints[i] = append(knotPoints[i], *k)
@@ -165,7 +161,7 @@ func readInputDay9(path string) ([]motion, error) {
 	defer input.Close()
 
 	motions := []motion{}
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		var m motion
 		_, err := fmt.Sscan(line, &m.Dir, &m.Steps)
 		if err != nil {

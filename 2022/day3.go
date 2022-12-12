@@ -104,7 +104,7 @@ func readInputDay3(path string) ([]rucksack, error) {
 	defer input.Close()
 
 	rucksacks := []rucksack{}
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		rucksacks = append(rucksacks, readRucksack(line))
 		return nil
 	})

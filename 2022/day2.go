@@ -131,7 +131,7 @@ func readInputDay2(path string) ([]round, error) {
 	defer input.Close()
 
 	rounds := []round{}
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		r := round{}
 		_, err := fmt.Sscan(line, &r.OpponentPlay, &r.Suggestion)
 		if err != nil {

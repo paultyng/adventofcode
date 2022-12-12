@@ -29,11 +29,11 @@ func TestPointTouches(t *testing.T) {
 		{false, point{0, 0}, point{2, 2}},
 	} {
 		t.Run(fmt.Sprintf("%v %v", tc.p1, tc.p2), func(t *testing.T) {
-			if actual := tc.p1.Touches(tc.p2); actual != tc.expected {
+			if actual := tc.p1.TouchesDay9(tc.p2); actual != tc.expected {
 				t.Errorf("expected %t, got %t", tc.expected, actual)
 			}
 
-			if actual := tc.p2.Touches(tc.p1); actual != tc.expected {
+			if actual := tc.p2.TouchesDay9(tc.p1); actual != tc.expected {
 				t.Errorf("expected %t, got %t (inverse test)", tc.expected, actual)
 			}
 		})
@@ -55,7 +55,7 @@ func TestMoveTowards(t *testing.T) {
 		{point{1, 1}, point{0, 0}, point{1, 2}},
 	} {
 		t.Run(fmt.Sprintf("%v %v", tc.p, tc.to), func(t *testing.T) {
-			tc.p.MoveTowards(tc.to)
+			tc.p.MoveTowardsDay9(tc.to)
 			if tc.p != tc.expected {
 				t.Errorf("expected %v, got %v", tc.expected, tc.p)
 			}

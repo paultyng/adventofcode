@@ -96,7 +96,7 @@ func readInputDay10(path string) ([]int, error) {
 
 func processCycles(r io.Reader) ([]int, error) {
 	cycles := []int{1}
-	err := readLines(r, func(line string) error {
+	err := readLines(r, func(_ int, line string) error {
 		lastX := cycles[len(cycles)-1]
 		switch {
 		case line == "noop":

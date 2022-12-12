@@ -166,7 +166,7 @@ func readInputDay8(path string) (forest, error) {
 	defer input.Close()
 
 	f := forest{}
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		if len(f) > 0 && len(line) != len(f[0]) {
 			return fmt.Errorf("unexpected line length: %q", line)
 		}

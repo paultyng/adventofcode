@@ -35,15 +35,18 @@ KeyLoop:
 	return nil
 }
 
-func readLines(r io.Reader, handleLine func(line string) error) error {
+func readLines(r io.Reader, handleLine func(i int, line string) error) error {
 	scanner := bufio.NewScanner(r)
+	i := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		err := handleLine(line)
+		err := handleLine(i, line)
 		if err != nil {
 			return fmt.Errorf("unable to handle line %q: %w", line, err)
 		}
+
+		i++
 	}
 	if err := scanner.Err(); err != nil {
 		return fmt.Errorf("scanner error: %w", err)
@@ -144,4 +147,31 @@ func abs[T int](v T) T {
 		return -v
 	}
 	return v
+}
+
+type point struct {
+	// TODO: allow more types than int?
+	X, Y int
+}
+
+type grid[T any] [][]T
+
+func (g *grid[T]) InBounds(p point) bool {
+	return p.Y >= 0 && p.Y < len(*g) && p.X >= 0 && p.X < len((*g)[0])
+}
+
+func (g *grid[T]) At(p point) T {
+	return (*g)[p.Y][p.X]
+}
+
+func (g *grid[T]) String() string {
+	s := ""
+	for _, row := range *g {
+		for _, cell := range row {
+			s += fmt.Sprintf("%4v", cell)
+		}
+		s += "\n"
+	}
+
+	return s
 }

@@ -39,7 +39,7 @@ func readInputDay20(path string) ([]rucksack, error) {
 	}
 	defer input.Close()
 
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		var localVar int
 		_, err := fmt.Sscan(line, &localVar)
 		if err != nil {

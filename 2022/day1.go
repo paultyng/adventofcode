@@ -72,7 +72,7 @@ func readInputDay1(path string) ([][]int, error) {
 	elves := [][]int{}
 	elf := []int{}
 
-	err = readLines(input, func(line string) error {
+	err = readLines(input, func(_ int, line string) error {
 		if line == "" {
 			elves = append(elves, elf)
 			elf = []int{}
