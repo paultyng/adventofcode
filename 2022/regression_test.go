@@ -97,6 +97,11 @@ func TestPastAnswers(t *testing.T) {
 		{runDay12Part1, []string{"day12.input"}, "504"},
 		{runDay12Part2, []string{"day12.input.test"}, "29"},
 		// {runDay12Part2, []string{"day12.input"}, "500"}, // skipping for speed
+
+		{runDay13Part1, []string{"day13.input.test"}, "13"},
+		{runDay13Part1, []string{"day13.input"}, "5682"},
+		{runDay13Part2, []string{"day13.input.test"}, "140"},
+		{runDay13Part2, []string{"day13.input"}, "20304"},
 	} {
 		t.Run(fmt.Sprintf("%s %#v", runtime.FuncForPC(reflect.ValueOf(part.run).Pointer()).Name(), part.args), func(t *testing.T) {
 			ctx := context.TODO()
