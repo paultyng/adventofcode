@@ -154,6 +154,45 @@ type point struct {
 	X, Y int
 }
 
+func (p point) Move(dx, dy int) point {
+	p.X += dx
+	p.Y += dy
+	return p
+}
+
+type line []point
+
+func (l *line) IsOnLine(p point) bool {
+	if len(*l) <= 1 {
+		panic("line must have 2 points")
+	}
+
+	last := (*l)[0]
+	for _, v := range (*l)[1:] {
+		if pointIsOnLineSegment(last, v, p) {
+			return true
+		}
+		last = v
+	}
+	return false
+}
+
+func pointIsOnLineSegment(lineA, lineB, c point) bool {
+	crossProduct := (c.Y-lineA.Y)*(lineB.X-lineA.X) - (c.X-lineA.X)*(lineB.Y-lineA.Y)
+
+	if abs(crossProduct) > 0 {
+		return false
+	}
+
+	dotProduct := (c.X-lineA.X)*(lineB.X-lineA.X) + (c.Y-lineA.Y)*(lineB.Y-lineA.Y)
+	if dotProduct < 0 {
+		return false
+	}
+
+	squaredLengthBA := (lineB.X-lineA.X)*(lineB.X-lineA.X) + (lineB.Y-lineA.Y)*(lineB.Y-lineA.Y)
+	return dotProduct <= squaredLengthBA
+}
+
 type grid[T any] [][]T
 
 func (g *grid[T]) InBounds(p point) bool {
