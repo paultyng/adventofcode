@@ -154,6 +154,10 @@ type point struct {
 	X, Y int
 }
 
+func (p point) ManhattanDistance(to point) int {
+	return abs(p.X-to.X) + abs(p.Y-to.Y)
+}
+
 func (p point) Move(dx, dy int) point {
 	p.X += dx
 	p.Y += dy
