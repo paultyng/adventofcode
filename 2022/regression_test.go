@@ -110,8 +110,8 @@ func TestPastAnswers(t *testing.T) {
 
 		{runDay15Part1, []string{"day15.input.test", "10"}, "26"},
 		{runDay15Part1, []string{"day15.input", "2000000"}, "6078701"},
-		// {runDay15Part2, []string{"day15.input.test"}, "93"},
-		// {runDay15Part2, []string{"day15.input"}, "25585"},
+		{runDay15Part2, []string{"day15.input.test", "20"}, "56000011"},
+		{runDay15Part2, []string{"day15.input", "4000000"}, "12567351400528"},
 	} {
 		t.Run(fmt.Sprintf("%s %#v", runtime.FuncForPC(reflect.ValueOf(part.run).Pointer()).Name(), part.args), func(t *testing.T) {
 			ctx := context.TODO()

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 	"strconv"
 )
@@ -10,6 +11,17 @@ import (
 type sensor struct {
 	point
 	ClosestBeacon point
+
+	dist *int
+}
+
+func (s *sensor) ManhattanDistance() int {
+	if s.dist == nil {
+		dist := s.point.ManhattanDistance(s.ClosestBeacon)
+		s.dist = &dist
+	}
+
+	return *s.dist
 }
 
 func (s *sensor) bounds() (minX, maxX, minY, maxY int) {
@@ -40,7 +52,7 @@ func (t *tunnel) boundsWithCoverage() (minX, maxX, minY, maxY int) {
 	}
 
 	minX, maxX, minY, maxY = (*t)[0].bounds()
-	dist := (*t)[0].ManhattanDistance((*t)[0].ClosestBeacon)
+	dist := (*t)[0].ManhattanDistance()
 	minX -= dist
 	maxX += dist
 	minY -= dist
@@ -48,7 +60,7 @@ func (t *tunnel) boundsWithCoverage() (minX, maxX, minY, maxY int) {
 
 	for _, s := range (*t)[1:] {
 		xMinX, sMaxX, sMinY, sMaxY := s.bounds()
-		dist := s.ManhattanDistance(s.ClosestBeacon)
+		dist := s.ManhattanDistance()
 		xMinX -= dist
 		sMaxX += dist
 		sMinY -= dist
@@ -83,14 +95,14 @@ NextX:
 				continue
 			}
 
-			dist := s.point.ManhattanDistance(s.ClosestBeacon)
+			dist := s.ManhattanDistance()
 
 			// todo: pre-filter sensor list as just points and distances?
 			if s.Y-dist > y || s.Y+dist < y {
 				continue
 			}
 
-			if s.ManhattanDistance(p) <= dist {
+			if s.point.ManhattanDistance(p) <= dist {
 				totalX++
 				continue NextX
 			}
@@ -98,6 +110,57 @@ NextX:
 	}
 
 	return totalX
+}
+
+func (t *tunnel) FirstPossibleBeacon(maxSearch int) point {
+	minX, maxX, minY, maxY := t.boundsWithCoverage()
+	if minX < 0 {
+		minX = 0
+	}
+	if maxX > maxSearch {
+		maxX = maxSearch
+	}
+	if minY < 0 {
+		minY = 0
+	}
+	if maxY > maxSearch {
+		maxY = maxSearch
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	result := make(chan point, 1)
+	for x := minX; x <= maxX; x++ {
+		go func(ctx context.Context, x int) {
+		NextY:
+			for y := minY; y <= maxY; y++ {
+				p := point{X: x, Y: y}
+				for _, s := range *t {
+					select {
+					case <-ctx.Done():
+						return
+					default:
+						sensorDist := s.ManhattanDistance()
+						pointDist := s.point.ManhattanDistance(p)
+						if p == s.point || p == s.ClosestBeacon || pointDist <= sensorDist {
+							if y < s.Y {
+								y = s.Y + (sensorDist - pointDist)
+							} else {
+								y += sensorDist - pointDist
+							}
+							continue NextY
+						}
+					}
+				}
+				result <- p
+			}
+		}(ctx, x)
+	}
+
+	// this may never finish :'(
+
+	found := <-result
+	cancel()
+	return found
 }
 
 func runDay15Part1(ctx context.Context, args []string) (string, error) {
@@ -120,16 +183,27 @@ func runDay15Part1(ctx context.Context, args []string) (string, error) {
 }
 
 func runDay15Part2(ctx context.Context, args []string) (string, error) {
-	path := "day15.input"
-	if len(args) > 0 {
-		path = args[0]
+	if len(args) < 2 {
+		panic("path and max required")
 	}
-	_, err := readInputDay15(path)
+	path := args[0]
+	t, err := readInputDay15(path)
 	if err != nil {
 		return "", fmt.Errorf("unable to read input: %w", err)
 	}
 
-	panic("not implemented")
+	max, err := strconv.Atoi(args[1])
+	if err != nil {
+		return "", fmt.Errorf("unable to parse max: %w", err)
+	}
+
+	signal := t.FirstPossibleBeacon(max)
+
+	answer := big.NewInt(int64(signal.X))
+	answer = answer.Mul(answer, big.NewInt(4000000))
+	answer = answer.Add(answer, big.NewInt(int64(signal.Y)))
+
+	return fmt.Sprintf("%d", answer), nil
 }
 
 func readInputDay15(path string) (tunnel, error) {
